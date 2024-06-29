@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Osteoporosis Risk Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f2f2f2;
+            margin: 0;
+        }
+        .calculator {
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            width: 400px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .title {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+        }
+        .frame {
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 10px;
+        }
+        .frame-title {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        .input-group {
+            margin-bottom: 10px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .input-group input[type="number"], .input-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .input-group input[type="radio"] {
+            margin-right: 10px;
+        }
+        .button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .output-group {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <div class="title">Osteoporosis Risk Calculator</div>
+        <div class="frame">
+            <div class="frame-title">Demographic and Eye Examination Data</div>
+            <div class="input-group">
+                <label for="sex">Sex</label>
+                <input type="radio" name="sex" value="1"> Male
+                <input type="radio" name="sex" value="2"> Female
+            </div>
+            <div class="input-group">
+                <label for="age">Age</label>
+                <input type="number" id="age">
+            </div>
+            <div class="input-group">
+                <label for="weight">Weight (kg)</label>
+                <input type="number" id="weight">
+            </div>
+            <div class="input-group">
+                <label for="low_vision">Low Vision</label>
+                <input type="radio" name="low_vision" value="0"> No
+                <input type="radio" name="low_vision" value="1"> Yes
+            </div>
+            <div class="input-group">
+                <label for="ptosis">Ptosis</label>
+                <input type="radio" name="ptosis" value="0"> No
+                <input type="radio" name="ptosis" value="1"> Yes
+            </div>
+            <div class="input-group">
+                <label for="cataract">Cataract</label>
+                <input type="radio" name="cataract" value="0"> No
+                <input type="radio" name="cataract" value="1"> Yes
+            </div>
+            <div class="input-group">
+                <label for="pterygium">Pterygium</label>
+                <input type="radio" name="pterygium" value="0"> No
+                <input type="radio" name="pterygium" value="1"> Yes
+            </div>
+            <div class="input-group">
+                <label for="amd_wet">AMD Wet</label>
+                <input type="radio" name="amd_wet" value="0"> No
+                <input type="radio" name="amd_wet" value="1"> Yes
+            </div>
+            <div class="input-group">
+                <label for="dm">Diabetes Mellitus (DM)</label>
+                <input type="radio" name="dm" value="0"> No
+                <input type="radio" name="dm" value="1"> Yes
+            </div>
+            <div class="input-group">
+                <label for="dyslipidemia">Dyslipidemia</label>
+                <input type="radio" name="dyslipidemia" value="0"> No
+                <input type="radio" name="dyslipidemia" value="1"> Yes
+            </div>
+            <div class="input-group">
+                <label for="htn">Hypertension (HTN)</label>
+                <input type="radio" name="htn" value="0"> No
+                <input type="radio" name="htn" value="1"> Yes
+            </div>
+            <button class="button" onclick="calculate()">Calculate</button>
+        </div>
+        <div class="frame">
+            <div class="frame-title">Osteoporosis Prediction Results</div>
+            <div class="output-group">
+                <div id="osteoporosis-risk"></div>
+                <div id="osteopenia-risk"></div>
+                <div id="bmd-total-femur"></div>
+                <div id="bmd-femoral-neck"></div>
+                <div id="bmd-lumbar-spine"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculate() {
+            let sex = parseFloat(document.querySelector('input[name="sex"]:checked').value);
+            let age = parseFloat(document.getElementById('age').value);
+            let weight = parseFloat(document.getElementById('weight').value);
+            let low_vision = parseFloat(document.querySelector('input[name="low_vision"]:checked').value);
+            let ptosis = parseFloat(document.querySelector('input[name="ptosis"]:checked').value);
+            let cataract = parseFloat(document.querySelector('input[name="cataract"]:checked').value);
+            let pterygium = parseFloat(document.querySelector('input[name="pterygium"]:checked').value);
+            let amd_wet = parseFloat(document.querySelector('input[name="amd_wet"]:checked').value);
+            let dm = parseFloat(document.querySelector('input[name="dm"]:checked').value);
+            let dyslipidemia = parseFloat(document.querySelector('input[name="dyslipidemia"]:checked').value);
+            let htn = parseFloat(document.querySelector('input[name="htn"]:checked').value);
+
+            // Osteoporosis
+            let logit_osteoporosis = -5.0412 + 1.6221 * sex + 0.0976 * age - 0.0896 * weight + 0.4141 * low_vision + 0.2150 * ptosis - 0.2464 * dm - 0.2756 * dyslipidemia;
+            let osteoporosis_risk = 1 / (1 + Math.exp(-logit_osteoporosis)) * 100;
+
+            // Osteopenia
+            let logit_osteopenia = 0.2140 + 1.0921 * sex + 0.0651 * age - 0.0788 * weight + 0.1854 * cataract + 0.1705 * pterygium + 1.1531 * amd_wet - 0.2397 * dyslipidemia;
+            let osteopenia_risk = 1 / (1 + Math.exp(-logit_osteopenia)) * 100;
+
+            // Bone Mineral Density
+            let bmd_total_femur = 1.0268 - 0.1048 * sex - 0.0052 * age + 0.0050 * weight - 0.0313 * low_vision - 0.0111 * ptosis + 0.0089 * dm;
+            let bmd_femoral_neck = 0.8739 - 0.0843 * sex - 0.0051 * age + 0.0043 * weight - 0.0217 * low_vision - 0.0071 * ptosis;
+            let bmd_lumbar_spine = 0.8584 - 0.0899 * sex - 0.0033 * age + 0.0057 * weight - 0.0135 * ptosis + 0.0217 * dm + 0.0124 * dyslipidemia + 0.0105 * htn;
+
+
+            // Display results
+            document.getElementById('osteoporosis-risk').innerHTML = 'Osteoporosis Risk: ' + osteoporosis_risk.toFixed(2) + '%';
+            document.getElementById('osteopenia-risk').innerHTML = 'Osteopenia Risk: ' + osteopenia_risk.toFixed(2) + '%';
+            document.getElementById('bmd-total-femur').innerHTML = 'BMD of Total Femur: ' + bmd_total_femur.toFixed(4) + ' g/cm²';
+            document.getElementById('bmd-femoral-neck').innerHTML = 'BMD of Femoral Neck: ' + bmd_femoral_neck.toFixed(4) + ' g/cm²';
+            document.getElementById('bmd-lumbar-spine').innerHTML = 'BMD of Lumbar Spine: ' + bmd_lumbar_spine.toFixed(4) + ' g/cm²';
+        }
+    </script>
+</body>
+</html>
